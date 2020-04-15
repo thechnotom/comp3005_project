@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class SearchPanel extends JPanel {
 
-  SearchPanel () {
+  SearchPanel (String dbName, String dbUser, String dbPassword) {
     this.setLayout(ViewLibrary.layout);
     JPanel resultsPanel = ViewLibrary.makePanel(ViewLibrary.layout); // List panel
     JPanel toolsPanel = ViewLibrary.makePanel(ViewLibrary.layout);  // Search criteria panel
@@ -17,15 +17,12 @@ public class SearchPanel extends JPanel {
     ViewLibrary.layout.addLayoutComponent(toolsPanel, ViewLibrary.setConstraints(0, 1, 2, 1));
     
     resultsPanel.setBorder(BorderFactory.createTitledBorder("Results"));
-    toolsPanel.setBorder(BorderFactory.createTitledBorder("Tools"));
+    toolsPanel.setBorder(BorderFactory.createTitledBorder("Search Tools"));
 
     // List for all/searched points
-    DefaultListModel<Integer> listModel = new DefaultListModel<Integer>();
-    JList<Integer> list = new JList<Integer>(listModel);
+    DefaultListModel<String> listModel = new DefaultListModel<String>();
+    JList<String> list = new JList<String>(listModel);
     list.setFixedCellWidth(200);
-    for (int i = 0; i < 5; ++i) {
-      listModel.addElement(i);
-    }
     list.setVisibleRowCount(10);
     JScrollPane allScrollPane = new JScrollPane(list);
     ViewLibrary.layout.addLayoutComponent(allScrollPane, ViewLibrary.setConstraints(0, 0, 2, 1));
@@ -60,14 +57,11 @@ public class SearchPanel extends JPanel {
     search.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         System.out.println("Searching: " + searchBar.getText());
-        /*
         listModel.removeAllElements();  // Empty the list
-        ArrayList<Point> searchResults = ViewLibrary.storage.searchPointsName(searchBar.getText());
-        for (Point point : searchResults) {
-          listModel.addElement(point);
+        ArrayList<String> searchResults = DatabaseSearch.getBooksByTitle(searchBar.getText(), dbName, dbUser, dbPassword);
+        for (String book : searchResults) {
+          listModel.addElement(book);
         }
-        resultCount.setText("Results (\"" + searchBar.getText() + "\"): " + listModel.getSize());
-        */
       }
     });
 
@@ -75,11 +69,7 @@ public class SearchPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         searchBar.setText("");  // Clears the search bar
         listModel.removeAllElements();  // Empty the point list
-        for (int i = 0; i < 5; ++i) {
-          listModel.addElement(i);
-        }
         list.clearSelection();
-        resultCount.setText("Results: " + listModel.getSize());
       }
     });
 
